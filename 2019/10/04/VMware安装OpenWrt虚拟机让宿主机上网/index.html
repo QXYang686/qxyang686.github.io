@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yqxpro.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="OpenWrt是一个常用的路由器操作系统，基于Linux可以实现丰富的功能。将其配置为软路由虚拟机，可以让宿主机及其他虚拟机通过OpenWrt虚拟机上网。完成后，可以利用x86软路由的强大性能部署透明代理等各种功能。 虚拟机的创建 以VMware Workstation 15.1为例，在新建虚拟机中使用自定义配置、Workstation15.x硬件兼容性、稍后安装操作系统。      选择客户机操">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VMware安装OpenWrt虚拟机让宿主机上网">
+<meta property="og:url" content="https://yqxpro.com/2019/10/04/VMware安装OpenWrt虚拟机让宿主机上网/index.html">
+<meta property="og:site_name" content="杨钦翔的博客">
+<meta property="og:description" content="OpenWrt是一个常用的路由器操作系统，基于Linux可以实现丰富的功能。将其配置为软路由虚拟机，可以让宿主机及其他虚拟机通过OpenWrt虚拟机上网。完成后，可以利用x86软路由的强大性能部署透明代理等各种功能。 虚拟机的创建 以VMware Workstation 15.1为例，在新建虚拟机中使用自定义配置、Workstation15.x硬件兼容性、稍后安装操作系统。      选择客户机操">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-1.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-2.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-3.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-4.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-5.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-6.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-7.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-8.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-9.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-10.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-11.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-12.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-13.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-14.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-15.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-1.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-2.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-3.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-4.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-5.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-6.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-7.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-8.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-1.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-2.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-3.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-4.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-5.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-6.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-7.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-8.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-9.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-10.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-11.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-12.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-13.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-14.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-15.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-16.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-host/config-host-1.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-host/config-host-2.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-vmware/config-vmware-1.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-vmware/config-vmware-2.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-vmware/config-vmware-3.png">
+<meta property="og:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/config-vmware/config-vmware-4.png">
+<meta property="og:updated_time" content="2019-11-22T11:48:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VMware安装OpenWrt虚拟机让宿主机上网">
+<meta name="twitter:description" content="OpenWrt是一个常用的路由器操作系统，基于Linux可以实现丰富的功能。将其配置为软路由虚拟机，可以让宿主机及其他虚拟机通过OpenWrt虚拟机上网。完成后，可以利用x86软路由的强大性能部署透明代理等各种功能。 虚拟机的创建 以VMware Workstation 15.1为例，在新建虚拟机中使用自定义配置、Workstation15.x硬件兼容性、稍后安装操作系统。      选择客户机操">
+<meta name="twitter:image" content="https://yqxpro.com/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-1.png">
+
+<link rel="canonical" href="https://yqxpro.com/2019/10/04/VMware安装OpenWrt虚拟机让宿主机上网/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>VMware安装OpenWrt虚拟机让宿主机上网 | 杨钦翔的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">杨钦翔的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yqxpro.com/2019/10/04/VMware安装OpenWrt虚拟机让宿主机上网/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="杨钦翔">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杨钦翔的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          VMware安装OpenWrt虚拟机让宿主机上网
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-04 22:48:59" itemprop="dateCreated datePublished" datetime="2019-10-04T22:48:59+08:00">2019-10-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-11-22 19:48:00" itemprop="dateModified" datetime="2019-11-22T19:48:00+08:00">2019-11-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>OpenWrt是一个常用的路由器操作系统，基于Linux可以实现丰富的功能。将其配置为软路由虚拟机，可以让宿主机及其他虚拟机通过OpenWrt虚拟机上网。完成后，可以利用x86软路由的强大性能部署透明代理等各种功能。</p>
+<h2 id="虚拟机的创建"><a href="#虚拟机的创建" class="headerlink" title="虚拟机的创建"></a>虚拟机的创建</h2><ol>
+<li><p>以VMware Workstation 15.1为例，在新建虚拟机中使用自定义配置、Workstation15.x硬件兼容性、稍后安装操作系统。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-1.png" alt="新建虚拟机配置类型"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-2.png" alt="新建虚拟机硬件兼容性"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-3.png" alt="新建虚拟机操作系统"></p>
+</li>
+<li><p>选择客户机操作系统为Linux，版本为其他Linux 4.x 或更高版本内核64位。并对虚拟机进行命名。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-4.png" alt="选择客户机操作系统"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-5.png" alt="命名虚拟机"></p>
+</li>
+<li><p>配置处理器核心数、内存（根据软路由中将要配置的软件选择合适的配置）。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-6.png" alt="配置处理器核心数"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-7.png" alt="配置虚拟机内存"></p>
+</li>
+<li><p>配置网络类型为使用桥接网络。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-8.png" alt="配置桥接网络"></p>
+</li>
+<li><p>配置硬盘，使用LSI Logic类型SCSI控制器、SCSI硬盘类型、创建新虚拟磁盘、配置磁盘大小、命名磁盘文件。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-9.png" alt="配置I/O控制器类型"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-10.png" alt="配置虚拟磁盘类型"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-11.png" alt="配置创建新建虚拟磁盘"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-12.png" alt="配置磁盘容量"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-13.png" alt="指定磁盘文件"></p>
+</li>
+<li><p>选择自定义硬件，删除不必要的硬件，并添加新的VMnet1仅主机模式网卡。完成配置。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-14.png" alt="硬件配置一览"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/create-virtual-machine/create-virtual-machine-15.png" alt="删除不必要的硬件、配置新网卡"></p>
+</li>
+</ol>
+<h2 id="写入OpenWrt固件"><a href="#写入OpenWrt固件" class="headerlink" title="写入OpenWrt固件"></a>写入OpenWrt固件</h2><ol>
+<li><p>将新建的虚拟机磁盘挂载到现有的Linux虚拟机上。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-1.png" alt="现有虚拟机配置"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-2.png" alt="新增磁盘"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-3.png" alt="磁盘类型"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-4.png" alt="使用现有磁盘"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-5.png" alt="选择磁盘文件"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-6.png" alt="进行确认"></p>
+</li>
+<li><p>在现有虚拟机上下载OpenWrt压缩包、解压并写入到硬盘中。</p>
+<p> 从OpenWrt官网<a href="http://downloads.openwrt.org/" target="_blank" rel="noopener">下载页面</a>找到对应版本的<a href="http://downloads.openwrt.org/releases/18.06.4/targets/x86/64/openwrt-18.06.4-x86-64-combined-ext4.img.gz" target="_blank" rel="noopener">固件下载地址</a>。</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># wget http://downloads.openwrt.org/releases/18.06.4/targets/x86/64/openwrt-18.06.4-x86-64-combined-ext4.img.gz</span></span><br><span class="line"><span class="comment"># gunzip openwrt-18.06.4-x86-64-combined-ext4.img.gz</span></span><br><span class="line"><span class="comment"># dd if=openwrt-18.06.4-x86-64-combined-ext4.img.gz of=/dev/sdb</span></span><br></pre></td></tr></table></figure>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-7.png" alt="下载、解压、写入"></p>
+</li>
+<li><p>从作为工具用的虚拟机上删除OpenWrt虚拟磁盘。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-disk/config-disk-8.png" alt="删除OpenWrt虚拟磁盘"></p>
+</li>
+</ol>
+<h2 id="配置OpenWrt虚拟机"><a href="#配置OpenWrt虚拟机" class="headerlink" title="配置OpenWrt虚拟机"></a>配置OpenWrt虚拟机</h2><ol>
+<li><p>对OpenWrt虚拟机执行快照，方面后续操作错误时进行恢复。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-1.png" alt="快照功能入口"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-2.png" alt="快照配置"></p>
+</li>
+<li><p>默认情况下OpenWrt虚拟机的网卡绑定是反的(WAN与LAN交换),因此需要在OpenWrt虚拟机控制台上修改网卡绑定。修改时需要将/etc/config/network文件中的eth0和eth1交换。</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># vim /etc/config/network</span></span><br><span class="line"><span class="comment"># reboot</span></span><br></pre></td></tr></table></figure>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-3.png" alt="OpenWrt控制台"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-4.png" alt="修改后的网络配置文件的一部分"></p>
+</li>
+<li><p>断开主机网络(网线、WiFi),在浏览器地址栏输入OpenWrt默认地址192.168.1.1进入配置页面。点击Login进入到OpenWrt管理页面(无需密码)。点击Go to password configuration进入密码配置页面，输入密码、确认密码后拖动到页面底部点击Save保存密码。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-5.png" alt="OpenWrt登录界面"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-6.png" alt="登录后的界面"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-7.png" alt="新密码填写"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-8.png" alt="保存密码"></p>
+</li>
+<li><p>接着进入Network-&gt;Interfaces进行网络的配置。默认情况下WAN使用DHCP上网(电脑连接到路由器),如果使用其他方式上网需要在此处进行配置。LAN网络在默认情况下使用192.168.1.1地址并提供DHCP服务，为了避免与常见的路由器冲突，我们将其地址改为192.168.3.1。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-9.png" alt="网络接口配置界面"><br> 点击需要修改的接口（此处为LAN）的Edit按钮，在跳转到的界面上填写新的IP地址值，点击页面底部的Save保存配置。<br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-10.png" alt="LAN接口配置修改"><br> 在界面右上角点击UNSAVED CHANGES进入配置保存界面，点击Save &amp; Apply按钮完成配置的保存。<br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-11.png" alt="进入配置保存页"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-12.png" alt="配置保存页"></p>
+</li>
+<li><p>重启OpenWrt虚拟机使修改生效，并重启VMnet1虚拟机网卡重新获取IP。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-13.png" alt="重启OpenWrt虚拟机"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-14.png" alt="重启VMnet1网卡"></p>
+</li>
+<li><p>可以通过Network-&gt;Firewall-&gt;Port Forwards配置端口转发向外部提供服务（需要在控制台使用命令行安装ipset包）。</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># opkg update</span></span><br><span class="line"><span class="comment"># opkg install ipset</span></span><br></pre></td></tr></table></figure>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-15.png" alt="端口转发配置界面"></p>
+</li>
+<li><p>可以通过Network-&gt;Firewall-&gt;Traffic Rules配置SNAT将通过网络包的源地址修改为OpenWrt的LAN地址。通过这种方式，可以避免内网服务器将经过端口映射的包不经过OpenWrt虚拟机进行转发而不能被客户接收的问题。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-openwrt/config-openwrt-16.png" alt="SNAT配置界面"></p>
+</li>
+<li><p>在控制台使用命令行安装shadow-common、shadow-useradd包后即可通过useradd命令新增用户。新增完成后使用passwd修改密码。创建用户home目录，并编辑/etc/passwd文件指定新用户shell。</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># opkg update</span></span><br><span class="line"><span class="comment"># opkg install shadow-common shadow-useradd</span></span><br><span class="line"><span class="comment"># useradd newUserName</span></span><br><span class="line"><span class="comment"># mkdir -p /home/newUserName</span></span><br><span class="line"><span class="comment"># passwd newUserName</span></span><br><span class="line"><span class="comment"># vim /etc/passwd # 在newUserName行尾添加/bin/ash后可以通过SSH登录</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="配置宿主机通过OpenWrt上网"><a href="#配置宿主机通过OpenWrt上网" class="headerlink" title="配置宿主机通过OpenWrt上网"></a>配置宿主机通过OpenWrt上网</h2><ol>
+<li><p>关闭物理网卡的IP协议（方案1）。使用这种方案，物理网卡在宿主机上没有IP地址，无法联网。而OpenWRT虚拟机的WAN口桥接到了物理网卡上，接管了IP层的工作。此时，宿主机通过VMnet1仅主机模式虚拟网卡连接到OpenWrt虚拟机LAN口通过OpenWrt上网。因此在OpenWrt上配置的透明代理等可以在宿主机上使用。需要注意的是，WiFi连接工作在数据链路层，其连接、断开、密码等仍在宿主机上进行管理。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-host/config-host-1.png" alt="关闭物理网卡的IP协议"></p>
+</li>
+<li><p>取消物理网卡的默认网关（方案2）。使用这种方案，宿主机物理网卡上虽然配置了IP地址，但不指定默认网关。对主机路由表中不存在的IP条目，将通过VMnet1上配置的默认网关发送，从而实现了通过OpenWrt虚拟机上网。使用这种方式，可以在物理网卡上保留静态IP地址，对于需要使用静态IP来连接外部设备的情况很有用。</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-host/config-host-2.png" alt="关闭物理网卡的IP协议"></p>
+</li>
+</ol>
+<h2 id="配置其他虚拟机使用OpenWrt来提供网络服务"><a href="#配置其他虚拟机使用OpenWrt来提供网络服务" class="headerlink" title="配置其他虚拟机使用OpenWrt来提供网络服务"></a>配置其他虚拟机使用OpenWrt来提供网络服务</h2><ol>
+<li>其他虚拟机需要通过OpenWrt虚拟机上网时只需要将网卡修改为VMnet1仅主机网络并使用DHCP方式上网即可实现目标。</li>
+</ol>
+<h2 id="配置OpenWrt虚拟机开机自启"><a href="#配置OpenWrt虚拟机开机自启" class="headerlink" title="配置OpenWrt虚拟机开机自启"></a>配置OpenWrt虚拟机开机自启</h2><ol>
+<li><p>将虚拟机关机，配置为共享虚拟机</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-vmware/config-vmware-1.png" alt="关闭虚拟机"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-vmware/config-vmware-2.png" alt="配置为共享虚拟机"></p>
+</li>
+<li><p>在管理虚拟机电源操作中将OpenWrt虚拟机配置为开机自启</p>
+<p> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-vmware/config-vmware-3.png" alt="打开管理虚拟机电源操作"><br> <img src="/images/VMware安装OpenWrt虚拟机让宿主机上网/config-vmware/config-vmware-4.png" alt="打开管理虚拟机电源操作"></p>
+</li>
+<li><p>打开虚拟机电源</p>
+</li>
+</ol>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://asdasd.page/2018/04/12/VMWare-%E6%90%AD%E5%BB%BA-OpenWrt-%E8%BD%AF%E8%B7%AF%E7%94%B1/" target="_blank" rel="noopener">VMware 搭建 OpenWrt 软路由</a></li>
+<li><a href="https://cokebar.info/archives/2444" target="_blank" rel="noopener">虚拟机运行 OpenWrt 的方法 (VMware Workstation)</a></li>
+<li><a href="https://blog.csdn.net/xingyuzhe/article/details/47299825" target="_blank" rel="noopener">OpenWrt创建新用户</a></li>
+<li><a href="http://jaseywang.me/2014/08/30/nat-%E8%B7%9F%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3%E7%9A%84%E9%97%AE%E9%A2%98dual-nat/" target="_blank" rel="noopener">NAT 跟默认网关的问题(dual NAT)</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/05/24/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/21/字符集与字符编码-Unicode、GB2312、UTF/" rel="next" title="字符集与字符编码-Unicode、GB2312、UTF">
+      字符集与字符编码-Unicode、GB2312、UTF <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟机的创建"><span class="nav-number">1.</span> <span class="nav-text">虚拟机的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入OpenWrt固件"><span class="nav-number">2.</span> <span class="nav-text">写入OpenWrt固件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置OpenWrt虚拟机"><span class="nav-number">3.</span> <span class="nav-text">配置OpenWrt虚拟机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置宿主机通过OpenWrt上网"><span class="nav-number">4.</span> <span class="nav-text">配置宿主机通过OpenWrt上网</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置其他虚拟机使用OpenWrt来提供网络服务"><span class="nav-number">5.</span> <span class="nav-text">配置其他虚拟机使用OpenWrt来提供网络服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置OpenWrt虚拟机开机自启"><span class="nav-number">6.</span> <span class="nav-text">配置OpenWrt虚拟机开机自启</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">杨钦翔</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">杨钦翔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
